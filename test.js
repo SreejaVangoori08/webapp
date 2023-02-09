@@ -47,13 +47,10 @@ describe('Array', function () {
   });
 });
 
-describe('Authentication Tests', function() {
+describe('Health Test', function() {
     describe('Successes', function() {
-        it('Last name Validation', function(done) {
+        it('health', function(done) {
             request(app).get('/healthz').send({
-              email: "sk123@gmail.com",
-              password: "Sreeja@123",
-              first_name: "sreeja"
   }).end(function(err, res) {
                 expect(res.statusCode).to.be.equal(200);
                 done();
