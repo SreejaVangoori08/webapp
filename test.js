@@ -1,6 +1,6 @@
 
 const request = require('supertest')
-//const app = require('./index')
+const app = require('./server')
 const chai = require('chai')
 const expect = chai.expect
 
@@ -46,3 +46,19 @@ describe('Array', function () {
     });
   });
 });
+
+describe('Authentication Tests', function() {
+    describe('Successes', function() {
+        it('Last name Validation', function(done) {
+            request(app).get('/healthz').send({
+              email: "sk123@gmail.com",
+              password: "Sreeja@123",
+              first_name: "sreeja"
+  }).end(function(err, res) {
+                expect(res.statusCode).to.be.equal(200);
+                done();
+                console.log(res.statusCode);
+            })
+        })
+    })
+})
