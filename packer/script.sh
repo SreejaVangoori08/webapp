@@ -17,7 +17,7 @@ passwords=$(sudo grep 'temporary password' /var/log/mysqld.log | awk {'print $13
 mysql -u root -p$passwords --connect-expired-password -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'Sreeja@123';"
 mysql -u root -pSreeja@123 -e "create database cloudDB;"
 
-sudo mysql -u root -pSujith@123 <<EOF
+sudo mysql -u root -pSreeja@123 <<EOF
 CREATE USER 'sreeja'@'localhost' IDENTIFIED BY 'Sreeja@123';
 GRANT ALL PRIVILEGES ON cloudDB.* TO 'sreeja'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
