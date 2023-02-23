@@ -1,10 +1,10 @@
 const dbConfig=require('../config/dbConfig.js');
 const{Sequelize,DataTypes, NOW}=require('sequelize');
 const sequelize=new Sequelize(
-    dbConfig.DB,
-    dbConfig.USER,
-    dbConfig.PASSWORD,{
-        host: dbConfig.HOST,
+    process.env.DB,
+    process.env.USER,
+    process.env.PASSWORD,{
+        host: process.env.HOST,
         dialect: dbConfig.dialect,
         // operatorsAliases: false,
     pool:{
