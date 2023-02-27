@@ -95,4 +95,3 @@ build {
     script = "script.sh"
   }
 
-}
