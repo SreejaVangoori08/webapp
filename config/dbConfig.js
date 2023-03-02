@@ -6,7 +6,7 @@
     HOST:process.env.DB_HOST,
     USER:process.env.DB_USER,
     PASSWORD:process.env.DB_PASSWORD,
-    DB:process.env.DATABASE,
+    DB:process.env.DB_DATABASE,
     dialect:'mysql',
     pool:{
        max:5,
