@@ -2,9 +2,22 @@ const db = require("../model");
 const bcrypt = require("bcrypt");
 const { products } = require("../model");
 const isEmail = require("./userController");
-
+const imageController = require("./imageController");
+const AWS = require("aws-sdk");
 const Product = db.product;
 const User = db.user;
+const Image = db.images;
+// const awsBucketName = process.env.AWS_BUCKET_NAME;
+const awsBucketName = "sreejabucket"
+
+const s3 = new AWS.S3({
+  // accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  // secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  // region: process.env.aws_region,
+  accessKeyId: "AKIATPUL2BF25TRYCEPQ",
+  secretAccessKey: "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",
+  region: "us-east-1",
+});
 
 const addproduct = async (req, res) => {
     let authorizationSuccess = false;
@@ -536,8 +549,10 @@ const deleteproduct = async (req, res) => {
                             }
 
                             else if (productDetails.owner_user_id == userDetails.id) {
-
+                              deleteImagesInS3WithProductId(pId).then(()=>{
                                 deleteProduct(pId).then(rt=>res.sendStatus(204));
+                              });
+                                
                             }
                             else {
                                 res.status(403).send("forbidden")
@@ -577,6 +592,37 @@ const ownerProduct = async (id) => {
     });
     return productDetails;
 };
+const getAllImagesByProduct = async (productId) => {
+  const imagesList = await Image.findAll({
+    where: {
+      product_id: productId,
+    },
+    attributes: [
+      "image_id",
+      "product_id",
+      "file_name",
+      "date_created",
+      "s3_bucket_path",
+    ],
+  });
+  return imagesList;
+};
+
+const deleteImagesInS3WithProductId = async (productId) => {
+  try {
+    const imagesList = await getAllImagesByProduct(productId);
+    const promises = imagesList.map((image) => {
+      return s3.deleteObject({
+        Bucket: awsBucketName,
+        Key: image.file_name,
+      }).promise();
+    });
+    await Promise.all(promises);
+    console.log(`Successfully deleted all images for product ID: ${productId}`);
+  } catch (err) {
+    console.error(`Error deleting images for product ID ${productId}: ${err}`);
+  }
+};
 
 const createProduct = async (prod) => {
     const product = await Product.create(prod);
@@ -588,6 +634,7 @@ const deleteProduct = async (id) => {
     })
     return true;
 };
+
 
 const updateProduct = async (prod) => {
     const updatedProd = Product.update(prod, {
@@ -604,4 +651,5 @@ module.exports = {
     patchproduct,
     getproduct,
     deleteproduct,
+    ownerProduct
 };
