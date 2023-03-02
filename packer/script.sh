@@ -35,6 +35,7 @@ unzip webapp.zip
 rm webapp.zip
 # cd webapp
 npm install
+mkdir uploads
 cd ..
 sudo chmod 755 webapp
 # touch webapp.service
