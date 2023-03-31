@@ -22,6 +22,8 @@ portfinder.getPort(function (err, port) {
 
 app.get("/healthz", async (req, res) => {
     res.status(200).send("OK");
+    logger.log('info','healthz okay endpoint');
+    
 });
 app.use((err, req, res, next) => {
     
