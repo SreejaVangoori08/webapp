@@ -22,7 +22,7 @@ cat <<EOF >> config.json
       "files": {
         "collect_list": [
           {
-            "file_path": " /home/ec2-user/webapp/logs/csye6225.log",
+            "file_path": " /home/ec2-user/webapp/csye6225.log",
             "log_group_name": "csye6225",
             "log_stream_name": "webapp"
           }
