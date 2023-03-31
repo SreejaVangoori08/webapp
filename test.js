@@ -4,6 +4,7 @@ const app = require('./server')
 const chai = require('chai')
 const expect = chai.expect
 
+
 // describe('Authentication Tests', function() {
 //     describe('Successes', function() {
 //         it('Email Validation', function(done) {

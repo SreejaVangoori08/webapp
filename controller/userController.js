@@ -3,6 +3,23 @@ const bcrypt = require("bcrypt");
 const { user } = require('../model');
 
 const User = db.user
+const winston = require("winston");
+const statsd = require("node-statsd");
+const statsdClient=new statsd(
+  {host: 'localhost',
+  port: 8125}
+)
+
+const path = require('path');
+
+const logsFolder = path.join(__dirname, '../logs');
+
+const logger = winston.createLogger({
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: path.join(logsFolder, 'csye6225.log') })
+  ]
+});
 
 let isEmail = (email) => {
     var emailFormat = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -30,6 +47,8 @@ let encryptedPassword = (password) => {
 };
 
 const adduser = async (req, res) => {
+    statsdClient.increment('POST.adduser.count');
+    logger.log('info','Started adduser endpoint');
     const allowedParams = ["first_name", "last_name", "password", "username"];
     const receivedParams = Object.keys(req.body);
     const unwantedParams = receivedParams.filter(
@@ -77,6 +96,7 @@ const adduser = async (req, res) => {
         else if (username == null) {
 
             res.status(400).send("Please enter email");
+            logger.log('warn','no email error adduser endpoint');
         }
         else if (password == null) {
 
@@ -112,10 +132,13 @@ const adduser = async (req, res) => {
                         "account_updated": s1user.account_updated
                     }
                 );
+                logger.log('info','user created adduser endpoint');
 
             }
             else {
                 res.status(400).send("username already exists");
+               
+                logger.log('warn','username already exists adduser endpoint');
             }
 
         }
@@ -124,11 +147,14 @@ const adduser = async (req, res) => {
 }
 
 const getuser = async (req, res) => {
+    statsdClient.increment('GET.getuser.count');
+    logger.log('info','Started getuser endpoint');
     const userId = req.params.userId;
     let authheader = req.headers.authorization;
     if (!authheader) {
 
         res.status(401).send("basic authentication not present");
+        logger.log('error','basicAuth not present adduser endpoint');
 
     }
     else {
@@ -144,6 +170,7 @@ const getuser = async (req, res) => {
             if (suser == null) {
                 console.log("------> User Not Found");
                 res.status("User not found").sendStatus(401);
+                logger.log('error','User not found getuser endpoint');
             }
 
             else {
@@ -161,10 +188,12 @@ const getuser = async (req, res) => {
                             account_created: suser.account_created,
                             account_updated: suser.account_updated
                         });
+                        logger.log('info','get product success adduser endpoint');
                     }
                     else {
-                        console.log("Authentication Failed");
+                       
                         res.status(401).send("Forbidden");
+                        logger.log('error','Authentication Failed getuser endpoint');
                     }
                 });
             }
@@ -174,6 +203,8 @@ const getuser = async (req, res) => {
 }
 
 const updateuser = async (req, res) => {
+    statsdClient.increment('UPDATE.updateuser.count');
+    logger.log('info','Started updateuser endpoint');
     const allowedParams = ["first_name", "last_name", "password"];
     const receivedParams = Object.keys(req.body);
     const unwantedParams = receivedParams.filter(
@@ -215,6 +246,7 @@ const updateuser = async (req, res) => {
         let authheader = req.headers.authorization;
         if (!authheader) {
             res.status(400).send("basic authentication not present");
+            logger.log('error','BasicAuth not present updateuser endpoint');
         }
         else {
             var auth = new Buffer.from(authheader.split(" ")[1], "base64")
@@ -228,6 +260,7 @@ const updateuser = async (req, res) => {
                 if (suser == null) {
                     console.log("->User not found");
                     res.status(401).send("Authentication failed");
+                    logger.log('error','Authentication failed updateuser endpoint');
                 }
 
                 else {
@@ -261,11 +294,12 @@ const updateuser = async (req, res) => {
                             else {
                                 const user = User.update(upinfo, { where: { id: userId } })
                                 res.status(204).send(user)
+                                logger.log('info','User update Successful updateuser endpoint');
                             }
                         }
                         else {
-                            console.log("Authorization Failed");
                             res.status(403).send("Forbidden");
+                            logger.log('warn','Authorization Failed updateuser endpoint');
                         }
 
 
