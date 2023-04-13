@@ -13,7 +13,7 @@ const statsdClient=new statsd(
 
 const path = require('path');
 
-const logsFolder = path.join(__dirname, '../logs');
+const logsFolder = path.join(__dirname, '../');
 
 const logger = winston.createLogger({
   transports: [
