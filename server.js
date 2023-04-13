@@ -43,6 +43,13 @@ app.get("/healthz", async (req, res) => {
     logger.log('info','healthz okay endpoint');
     
 });
+app.get("/health", async (req, res) => {
+  statsdClient.increment('GET.health.count');
+    res.status(200).send("OK health");
+    logger.log('info','health okay endpoint');
+    
+});
+
 app.use((err, req, res, next) => {
     
     if (err instanceof multer.MulterError) {
