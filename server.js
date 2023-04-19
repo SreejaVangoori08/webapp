@@ -23,11 +23,11 @@ const logger = winston.createLogger({
 });
 
 const routers=require('./routes/userRouter.js')
-app.use('/v1/user',routers)
+app.use('/v2/user',routers)
 const routersp=require('./routes/productRouter.js')
-app.use('/v1/product',routersp)
+app.use('/v2/product',routersp)
 const routersImage = require("./routes/imageRouter");
-app.use("/v1/product", routersImage);
+app.use("/v2/product", routersImage);
 
 var portfinder = require("portfinder");
 // const { routes } = require('.')
